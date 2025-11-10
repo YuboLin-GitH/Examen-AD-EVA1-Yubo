@@ -205,14 +205,18 @@ public class TallerController {
             tfPrecio.setText(String.valueOf(cocheSeleccionado.getPrecio()));
 
 
-             if (cocheSeleccionado.getPagado()) {
+            Boolean pagado = cocheSeleccionado.getPagado();
+            if (pagado != null && pagado) {
                 noPagado.setSelected(false);
                 siPagado.setSelected(true);
+            } else if (pagado != null && !pagado) {
+                noPagado.setSelected(true);
+                siPagado.setSelected(false);
             } else {
-             noPagado.setSelected(true);
-         siPagado.setSelected(false);
+                // pagado == null 的时候，可以都不选或者给提示
+                noPagado.setSelected(false);
+                siPagado.setSelected(false);
             }
-
 
 
 
@@ -250,7 +254,13 @@ public class TallerController {
             r.setPrecio(precioNuevo);
             r.setDescripcion(descrpcionNuevo);
             r.setCoches(coches);
-
+            if (siPagado.isSelected()) {
+                r.setPagado(true);   // 已付
+            } else if (noPagado.isSelected()) {
+                r.setPagado(false);  // 未付
+            } else {
+                r.setPagado(null);   // 都没选
+            }
             try(Session session = HibernateUtil.getSession()) {
 
                 hibernateReparacionesInterface.insertarReparaciones(session, r);

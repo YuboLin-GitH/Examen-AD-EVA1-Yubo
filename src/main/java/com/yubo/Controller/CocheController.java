@@ -1,6 +1,7 @@
 package com.yubo.Controller;
 
 import com.yubo.DAO.MarcasDAO;
+import com.yubo.Model.Coches;
 import com.yubo.Model.Marcas;
 import com.yubo.util.AlertUtils;
 import com.yubo.util.HibernateUtil;
@@ -22,7 +23,7 @@ public class CocheController {
     @FXML
     public Button btModificar;
 
-
+    private Coches coches;
 
     @FXML
     public void initialize(){
@@ -30,6 +31,11 @@ public class CocheController {
         cargarEspecialidades();
     }
 
+    public void setCoche(Coches car){
+        this.coches = car;
+        tfMatricula.setText(car.getMatricula());
+        tfKm.setText(String.valueOf(car.getKm()));
+    }
 
     private void cargarEspecialidades() {
         MarcasDAO especialidadDAO = new MarcasDAO();

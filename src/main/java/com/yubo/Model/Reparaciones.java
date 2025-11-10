@@ -26,6 +26,7 @@ public class Reparaciones implements Serializable {
     private int precio;
 
     @Column(name = "pagado")
+    @Convert(converter = SiNoBooleanConverter.class)
     private  Boolean pagado;
 
     @ManyToOne

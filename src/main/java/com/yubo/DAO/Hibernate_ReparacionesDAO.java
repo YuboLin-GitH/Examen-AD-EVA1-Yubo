@@ -18,7 +18,7 @@ public class Hibernate_ReparacionesDAO implements Hibernate_ReparacionesInterfac
     @Override
     public List<Reparaciones> listaReparaciones(Session session)
     {
-        List<Reparaciones> lista = session.createQuery("from reparaciones ", Reparaciones.class).list();
+        List<Reparaciones> lista = session.createQuery("from Reparaciones", Reparaciones.class).list();
         return lista;
 
         //list.forEach(System.out::println);//version 1.8 de java
