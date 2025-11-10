@@ -213,7 +213,6 @@ public class TallerController {
                 noPagado.setSelected(true);
                 siPagado.setSelected(false);
             } else {
-                // pagado == null 的时候，可以都不选或者给提示
                 noPagado.setSelected(false);
                 siPagado.setSelected(false);
             }
@@ -231,6 +230,8 @@ public class TallerController {
         dpFechaReparacion.setValue(null);
         taDescripcion.clear();
         tfPrecio.clear();
+        noPagado.setSelected(false);
+        siPagado.setSelected(false);
     }
 
 
@@ -245,6 +246,8 @@ public class TallerController {
             String descrpcionNuevo = taDescripcion.getText();
 
 
+            String seleccionado = ((RadioButton) tgPagado.getSelectedToggle()).getText();
+
             if (fechaSeleccionada == null ) {
                 AlertUtils.mostrarError("Elegir fecha de Reparaciones");
                 return;
@@ -254,13 +257,26 @@ public class TallerController {
             r.setPrecio(precioNuevo);
             r.setDescripcion(descrpcionNuevo);
             r.setCoches(coches);
-            if (siPagado.isSelected()) {
-                r.setPagado(true);   // 已付
-            } else if (noPagado.isSelected()) {
-                r.setPagado(false);  // 未付
+
+            boolean Select = false;
+
+            if (seleccionado.equals("Si")) {
+                Select = true;
             } else {
-                r.setPagado(null);   // 都没选
+                Select = false;
+            } // DAR VALOR A SI ESTA SELECCIONADO EL RADIOBUTTON O NO
+            r.setPagado(Select);
+
+
+            /*
+            if (siPagado.isSelected()) {
+                r.setPagado(true);
+            } else if (noPagado.isSelected()) {
+                r.setPagado(false);
+            } else {
+                r.setPagado(null);
             }
+            */
             try(Session session = HibernateUtil.getSession()) {
 
                 hibernateReparacionesInterface.insertarReparaciones(session, r);
