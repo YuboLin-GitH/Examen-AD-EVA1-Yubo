@@ -23,6 +23,7 @@ import org.hibernate.Session;
 
 import java.io.IOException;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -173,7 +174,7 @@ public class TallerController {
 
 
             if (reparaciones.isEmpty()) {
-                AlertUtils.mostrarInformacion("El paciente no tiene reparaciones registradas.");
+                AlertUtils.mostrarInformacion("El reparacion no tiene reparaciones registradas.");
                 tvReparacionVehiculo.getItems().clear();
                 return;
             }
@@ -188,7 +189,7 @@ public class TallerController {
 
 
         } catch (Exception e) {
-            AlertUtils.mostrarError("Error al buscar paciente: " + e.getMessage());
+            AlertUtils.mostrarError("Error al buscar reparacion: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -205,11 +206,11 @@ public class TallerController {
             tfPrecio.setText(String.valueOf(cocheSeleccionado.getPrecio()));
 
 
-            Boolean pagado = cocheSeleccionado.getPagado();
-            if (pagado != null && pagado) {
+            String pagado = cocheSeleccionado.getPagado();
+            if (pagado != null && "Si".equals(cocheSeleccionado.getPagado())) {
                 noPagado.setSelected(false);
                 siPagado.setSelected(true);
-            } else if (pagado != null && !pagado) {
+            } else if (pagado != null && "No".equals(cocheSeleccionado.getPagado())) {
                 noPagado.setSelected(true);
                 siPagado.setSelected(false);
             } else {
@@ -257,26 +258,9 @@ public class TallerController {
             r.setPrecio(precioNuevo);
             r.setDescripcion(descrpcionNuevo);
             r.setCoches(coches);
-
-            boolean Select = false;
-
-            if (seleccionado.equals("Si")) {
-                Select = true;
-            } else {
-                Select = false;
-            } // DAR VALOR A SI ESTA SELECCIONADO EL RADIOBUTTON O NO
-            r.setPagado(Select);
+            r.setPagado(((RadioButton) tgPagado.getSelectedToggle()).getText());
 
 
-            /*
-            if (siPagado.isSelected()) {
-                r.setPagado(true);
-            } else if (noPagado.isSelected()) {
-                r.setPagado(false);
-            } else {
-                r.setPagado(null);
-            }
-            */
             try(Session session = HibernateUtil.getSession()) {
 
                 hibernateReparacionesInterface.insertarReparaciones(session, r);
@@ -334,9 +318,12 @@ public class TallerController {
 
             //SOLO se podrá borrar una reparación sino está pagada.
 
-            if (reparacionesSeleccionada.getPagado() == false){
+            if ("No".equals(reparacionesSeleccionada.getPagado())){
                 hibernateReparacionesInterface.borrarReparaciones(session, reparacionesSeleccionada);
                 AlertUtils.mostrarInformacion("Reparacion eliminada");
+            }
+            else {
+                AlertUtils.mostrarError("No se puede borra Coche estan pagado");
             }
 
 
@@ -363,6 +350,23 @@ public class TallerController {
             Parent root = fxmlLoader.load();
 
 
+            String matriculaIngresado = tfMatricula.getText().trim();
+            if (matriculaIngresado.isEmpty()) {
+                AlertUtils.mostrarError("Introduce una Matricula válido");
+                return;
+            }
+
+
+            Coches coche = mySQLCocheInterface.buscarPorMatricula(matriculaIngresado);
+
+
+            if (coche == null) {
+                AlertUtils.mostrarError("No se encontró paciente con ese Matricula");
+                return;
+            }
+            CocheController controller = fxmlLoader.getController();
+            controller.setCoche(coches);
+
             // OBTENER EL STAGE ACTUAL A PARTIR DEL BOTON QUE SE HA CLICADO
             Stage nuevoStage = new Stage();
             nuevoStage.setTitle("Modificar choche");
@@ -372,6 +376,9 @@ public class TallerController {
 
         } catch (IOException e) {
             e.printStackTrace(); // SI HAY ERROR EN LA CARGA DEL FXML, SE LANZA LA EXCEPCION
+        } catch (SQLException e) {
+            AlertUtils.mostrarError("Error al buscar reparacion: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 

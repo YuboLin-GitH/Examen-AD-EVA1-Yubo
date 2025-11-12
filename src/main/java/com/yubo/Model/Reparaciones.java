@@ -26,8 +26,7 @@ public class Reparaciones implements Serializable {
     private int precio;
 
     @Column(name = "pagado")
-    @Convert(converter = SiNoBooleanConverter.class)
-    private  Boolean pagado;
+    private  String pagado;
 
     @ManyToOne
     @JoinColumn(name = "idcoche", referencedColumnName = "idcoche")
@@ -37,7 +36,7 @@ public class Reparaciones implements Serializable {
     public Reparaciones() {
     }
 
-    public Reparaciones(int idreparacion,  LocalDate fechareparacion, String descripcion, int precio, Boolean pagado, Coches coches) {
+    public Reparaciones(int idreparacion,  LocalDate fechareparacion, String descripcion, int precio, String pagado, Coches coches) {
         this.idreparacion = idreparacion;
         this.fechareparacion = fechareparacion;
         this.descripcion = descripcion;
@@ -90,11 +89,11 @@ public class Reparaciones implements Serializable {
         this.precio = precio;
     }
 
-    public Boolean getPagado() {
+    public String getPagado() {
         return pagado;
     }
 
-    public void setPagado(Boolean pagado) {
+    public void setPagado(String pagado) {
         this.pagado = pagado;
     }
 

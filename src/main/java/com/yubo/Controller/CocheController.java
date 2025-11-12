@@ -1,5 +1,7 @@
 package com.yubo.Controller;
 
+import com.yubo.DAO.Hibernate_CocheDAO;
+import com.yubo.DAO.Hibernate_CocheInterfece;
 import com.yubo.DAO.MarcasDAO;
 import com.yubo.Model.Coches;
 import com.yubo.Model.Marcas;
@@ -15,6 +17,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class CocheController {
+    Hibernate_CocheInterfece hibernateCocheInterfece = new Hibernate_CocheDAO();
 
     @FXML
     public ComboBox<Marcas> cbMarca;
@@ -35,6 +38,14 @@ public class CocheController {
         this.coches = car;
         tfMatricula.setText(car.getMatricula());
         tfKm.setText(String.valueOf(car.getKm()));
+
+        for (Marcas marca : cbMarca.getItems()) {
+            if (marca.getNombreEspecilidad().equals(car.getMarca())) {
+                cbMarca.setValue(marca);
+                break;
+            }
+        }
+
     }
 
     private void cargarEspecialidades() {
@@ -65,7 +76,22 @@ public class CocheController {
 
     @FXML
     public void modificarCoche(){
+        Marcas marcas = cbMarca.getValue();
 
+        try (Session session = HibernateUtil.getSession()){
+
+
+            coches.setKm(Integer.parseInt(tfKm.getText()));
+            coches.setMarca(String.valueOf(marcas));
+
+
+            hibernateCocheInterfece.modificarCita(session, coches);
+
+            AlertUtils.mostrarInformacion("Coche Modificado");
+
+        } catch (Exception e) {
+            AlertUtils.mostrarError("Error：" + e.getMessage());
+        }
 
     }
 

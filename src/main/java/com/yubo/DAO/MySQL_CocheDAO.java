@@ -44,7 +44,7 @@ public class MySQL_CocheDAO implements MySQL_CocheInterface{
     @Override
     public List<Reparaciones> obtenerReparacionPorCocheId(int cocheId) throws SQLException {
         List<Reparaciones> reparaciones = new ArrayList<>();
-        String sql = "SELECT r.idreparacion, c.idcoche, r.fechareparacion, r.descripcion, r.precio, r.pagado " +
+        String sql = "SELECT r.idreparacion,c.km, c.marca, c.matricula, c.idcoche, r.fechareparacion, r.descripcion, r.precio, r.pagado " +
                 "FROM coches c JOIN reparaciones r ON c.idcoche = r.idcoche WHERE r.idcoche = ?";
 
         try (Connection conn = MySQL_ConnectionDB.conectar();
@@ -59,7 +59,7 @@ public class MySQL_CocheDAO implements MySQL_CocheInterface{
                 reparacione.setFechareparacion(rs.getDate("fechareparacion").toLocalDate());
                 reparacione.setDescripcion(rs.getString("descripcion"));
                 reparacione.setPrecio(rs.getInt("precio"));
-                reparacione.setPagado(Boolean.valueOf("Pagado"));
+                reparacione.setPagado(rs.getString("Pagado"));
 
                 Coches coches = new Coches();
                 coches.setIdcoche(rs.getInt("idcoche"));
